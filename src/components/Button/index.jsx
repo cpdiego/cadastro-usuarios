@@ -1,9 +1,9 @@
 import { Button } from './styles'
 
-function DefaultButton({ children, theme }) {
+function DefaultButton({ children, theme, ...props }) {
 
     return(
-        <Button theme={theme}>{children}</Button>
+        <Button {...props} theme={theme}>{children}</Button>
     )
 }
 
