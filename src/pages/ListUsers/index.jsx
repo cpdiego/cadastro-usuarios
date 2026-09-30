@@ -1,24 +1,58 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+
 import api from '../../services/api'
+
 import Button from '../../components/Button'
 import TopBackground from '../../components/TopBackground'
+import Trash from '../../assets/trash.svg'
+
+import { Container, Title, ContainerUsers, CardUsers, AvatarUser, TrashIcon } from './styles'
 
 function ListUsers() {
+    const [users, setUsers] = useState([])
+
+    const navigate = useNavigate()
 
     useEffect(() => {
 
         async function getUsers() {
-            const usersFromApi = await api.get('/usuarios')
+            const { data } = await api.get('/usuarios')
+
+            setUsers(data)
         }
         getUsers()
     }, [])
 
+    async function deleteUsers(id) {
+        await api.delete(`/usuarios/${id}`)
+
+        const updatedUsers = users.filter( user => user.id !== id)
+
+        setUsers(updatedUsers)
+    }
+
     return (
-        <div>
+        <Container>
             <TopBackground />
-            <h1>Listagem de Usuários</h1>
-            <Button>Voltar</Button>
-        </div>
+            <Title>Lista de Usuários</Title>
+
+            <ContainerUsers>
+                {users.map((user) => (
+                    <CardUsers key={user.id}>
+                        <AvatarUser src={`https://api.dicebear.com/9.x/toon-head/png?seed=${user.id}`}/>
+                        <div >
+                            <h3>{user.name}</h3>
+                            <p>{user.age}</p>
+                            <p>{user.email}</p>
+                        </div>
+                        <TrashIcon src={Trash} alt='icone-lixeira' onClick={() => deleteUsers(user.id)}/>
+                    </CardUsers>
+                ))}
+            </ContainerUsers>
+
+            <Button type='button' onClick={() => navigate('/')}>Voltar</Button>
+        </Container>
     )
 }
 
